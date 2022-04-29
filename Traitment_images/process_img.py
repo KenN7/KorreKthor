@@ -12,7 +12,7 @@ import pprint
 # from coords import coords
 
 
-def process(imgPath, copylayout,versionID):
+def process(imgPath, copylayout, versionID):
     """
     This function takes an image path and return the equivalent answers boolean array is the image is conform else None.
     The image is conform if there are 3 squares on each bottom left, top left and top right corners.
@@ -37,7 +37,7 @@ def process(imgPath, copylayout,versionID):
         # cv2.imshow("img", img)
         # cv2.waitKey(delay=0)
         # img = cv2.rotate(img, cv2.ROTATE_180)
-    markers = [[x +25 , y+25 ] for x, y in copylayout["markers"]]
+    markers = [[x + 25, y + 25] for x, y in copylayout["markers"]]
     markers = np.float32(sorted(markers))
     # markers have to be shifted because the coordinates are the top left
     # corner, but we detect the center of the marker in the orientation func
@@ -66,12 +66,8 @@ def process(imgPath, copylayout,versionID):
         for c in list_c:
             # print("cord:", c)
             c = (
-                round(
-                    transform_matrix[0, 0] * c[0] + transform_matrix[0, 1] * c[1] + transform_matrix[0, 2] 
-                ),
-                round(
-                    transform_matrix[1, 0] * c[0] + transform_matrix[1, 1] * c[1] + transform_matrix[1, 2]
-                ),
+                round(transform_matrix[0, 0] * c[0] + transform_matrix[0, 1] * c[1] + transform_matrix[0, 2]),
+                round(transform_matrix[1, 0] * c[0] + transform_matrix[1, 1] * c[1] + transform_matrix[1, 2]),
             )
             # print("transform cord:", c)
 
@@ -90,7 +86,13 @@ def process(imgPath, copylayout,versionID):
                 resp[-1].append(2)
             else:  # bl <= 0.1
                 resp[-1].append(0)  # box clearly unticked
-                cv2.rectangle(img, c, (round(c[0] + circle_size), round(c[1] + circle_size)), (0, 100, 0), 1)
+                cv2.rectangle(
+                    img,
+                    c,
+                    (round(c[0] + circle_size), round(c[1] + circle_size)),
+                    (0, 100, 0),
+                    1,
+                )
             # cv2.imshow("img", img)
             # cv2.waitKey(delay=500)
 
@@ -156,14 +158,19 @@ def isGoodPage(img, squaresTemplatePath="source_pdf/squares.PNG", threshold=0.8)
 
     mean_points = []
     for points in point_groups:
-        mean_points.append((round(np.mean([x[0] for x in points])+25), round(np.mean([x[1] for x in points])+25)))
+        mean_points.append(
+            (
+                round(np.mean([x[0] for x in points]) + 25),
+                round(np.mean([x[1] for x in points]) + 25),
+            )
+        )
         # 25 offset becaseu it is half of marker_template shape to get center of
         # marker as ref
 
     # print(mean_points)
 
     # for pt in mean_points:
-        # cv2.rectangle(img, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 5)
+    # cv2.rectangle(img, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 5)
     # cv2.imshow("img", img)
     # cv2.waitKey()
     # cv2.destroyAllWindows()
@@ -272,12 +279,24 @@ def getImageResponses(
     for i in fullList:
         i = (i[0] + 200, i[1] + 290)  # replace the matched points in the area
         img[i[1] : i[1] + 25, i[0] : i[0] + 25] = fullTemplate
-        cv2.circle(img, (round(i[0] + w / 2), round(i[1] + h / 2)), round(w / 2), (0, 255, 0), 1)
+        cv2.circle(
+            img,
+            (round(i[0] + w / 2), round(i[1] + h / 2)),
+            round(w / 2),
+            (0, 255, 0),
+            1,
+        )
 
     for i in emptyList:
         i = (i[0] + 200, i[1] + 290)  # replace the matched points in the area
         # img[i[1] : i[1] + 25, i[0] : i[0] + 25] = emptyTemplate
-        cv2.rectangle(img, i, (round(i[0] + (w * (2 / 3))), round(i[1] + (h * (2 / 3)))), (0, 100, 0), 1)
+        cv2.rectangle(
+            img,
+            i,
+            (round(i[0] + (w * (2 / 3))), round(i[1] + (h * (2 / 3)))),
+            (0, 100, 0),
+            1,
+        )
 
     # cv2.rectangle(img, (120, 200), (1000, 1550), (0,100,0), 1) # Display the matching area
 
@@ -438,10 +457,10 @@ def decodeQRCode(imagePath):
     try:
         try:
             qrcode = json.loads(preQRCode[0].data)
-            if qrcode['version'] == 'noVersion':
-                qrcode['version'] = 'X'
+            if qrcode["version"] == "noVersion":
+                qrcode["version"] = "X"
         except:
-            qr = preQRCode[0].data.decode("utf-8") 
+            qr = preQRCode[0].data.decode("utf-8")
             data = qr.split(";")
             qrcode = {"matricule": data[0], "version": data[1], "lessonId": data[2]}
     except Exception as e:

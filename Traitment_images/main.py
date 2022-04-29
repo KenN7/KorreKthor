@@ -22,16 +22,24 @@ def compute(pdfFileLocation, examId, copylayout):
         for img_nb_path in listPages:
             qrcode = process_img.decodeQRCode(img_nb_path)
             if not qrcode or "version" not in qrcode or "matricule" not in qrcode or "lessonId" not in qrcode:
-                jsonToSend.append({"error": f"has no correct QR Code: {qrcode}", "filename": img_nb_path})
+                jsonToSend.append(
+                    {
+                        "error": f"has no correct QR Code: {qrcode}",
+                        "filename": img_nb_path,
+                    }
+                )
                 continue
 
             if examId != qrcode["lessonId"]:
                 jsonToSend.append(
-                    {"error": f"{qrcode} does not belong to the lesson: {examId}", "filename": img_nb_path}
+                    {
+                        "error": f"{qrcode} does not belong to the lesson: {examId}",
+                        "filename": img_nb_path,
+                    }
                 )
                 continue
 
-            answers = process_img.process(img_nb_path, copylayout, qrcode['version'])
+            answers = process_img.process(img_nb_path, copylayout, qrcode["version"])
             if answers == None:
                 jsonToSend.append({"error": "is not a QCM file", "filename": img_nb_path})
                 continue
@@ -40,7 +48,12 @@ def compute(pdfFileLocation, examId, copylayout):
                 continue
 
             jsonToSend.append(
-                {"qrcode": qrcode, "answers": answers, "file": img_nb_path.split("/")[-1], "error": "None"}
+                {
+                    "qrcode": qrcode,
+                    "answers": answers,
+                    "file": img_nb_path.split("/")[-1],
+                    "error": "None",
+                }
             )
         return zip_and_send(examId, jsonToSend)
 
@@ -75,6 +88,8 @@ if __name__ == "__main__":
     # print("----")
     # res = compute("tests/a1ec4c74-f576-477d-9432-ad9a8a629b49_.pdf", "66af46b7-22f2-434e-a3ef-2bf547cab961")
     res = compute(
-        "tests/cfc8eaf2-17c8-48c1-9b16-ecb0d6d030f1_.pdf", "66af46b7-22f2-434e-a3ef-2bf547cab961", copylayout
+        "tests/cfc8eaf2-17c8-48c1-9b16-ecb0d6d030f1_.pdf",
+        "66af46b7-22f2-434e-a3ef-2bf547cab961",
+        copylayout,
     )
     pprint.pprint(res)

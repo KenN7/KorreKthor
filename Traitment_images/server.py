@@ -20,7 +20,7 @@ def index():
     examId = request.forms.get("exam_id")
     gridLayout = json.loads(request.forms.get("gridLayouts"))
     pdfFile = request.files.get("file")
-    
+
     if pdfFile and examId:
         Path("./saves/").mkdir(parents=True, exist_ok=True)
         now = datetime.now().strftime("%Y_%m_%d__%H_%M_%S")
